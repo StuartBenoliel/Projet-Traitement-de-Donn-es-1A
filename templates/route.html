@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Résultat de la recherche d'itinéraire</title>
+    <script>
+        function displayRoute() {
+            var route = localStorage.getItem("route");
+            document.getElementById("route").innerText = route;
+        }
+    </script>
+</head>
+<body onload="displayRoute()">
+    <h1>Résultat de la recherche d'itinéraire :</h1>
+    <div id="route"></div>
+    <a href="/">Revenir à la recherche d'itinéraire</a>
+</body>
+</html>

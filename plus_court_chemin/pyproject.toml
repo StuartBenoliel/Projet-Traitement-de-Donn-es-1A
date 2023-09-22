@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "plus_court_chemin"
+version = "0.1.0"
+description = ""
+authors = ["Carlos <charleswcarrere@gmail.com>"]
+readme = "README.md"
+packages = [{include = "plus_court_chemin"}]
+
+[tool.poetry.dependencies]
+python = "3.11.3"
+pandas = "1.5.3"
+openpyxl = "^3.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
