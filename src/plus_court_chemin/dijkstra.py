@@ -62,12 +62,10 @@ class Dijkstra:
         dict[list] :
             Le graphe représenté sous forme de dictionnaire.
         """
-        df_grouped = self.dataf.groupby([self.colonne_noeud_depart])
-        graphe = {}
-        for noeud, data in df_grouped:
-            graphe[noeud] = list(zip(data[self.colonne_noeud_arrivee],
-                                     data[self.colonne_distance]))
-        return graphe
+        df_grouped = self.dataf.groupby(self.colonne_noeud_depart).apply(
+            lambda x: list(zip(x[self.colonne_noeud_arrivee], x[self.colonne_distance]))
+        ).to_dict()
+        return df_grouped
 
     def chemin_partout(self, source):
         """Trouve le plus court chemin pour une multitude de destinations
@@ -207,3 +205,25 @@ class Dijkstra:
             parcours.append(sommet)
         parcours.reverse()
         return [parcours, distances[destination][1]]
+
+if __name__ == '__main__':
+    df_ex_4 = {
+    'Distance': [4, 3, 5, 2, 4, 4, 2, 4, 3, 3, 3, 3.5],
+    'Départ': ['Paris', 'Paris', 'Paris', 'Marseille', 'Bastia', 'Marseille',
+               'Lyon', 'Lyon', 'Lyon', 'Rennes', 'Rennes', 'Ajaccio'],
+    'Arrivé': ['Lyon', 'Rennes', 'Tarbes', 'Lyon', 'Ajaccio', 'Rennes',
+               'Marseille', 'Paris', 'Rennes', 'Lyon', 'Paris', 'Bastia']
+    }
+    graphe_ex_4 = {
+    'Paris': [('Lyon', 4), ('Rennes', 3), ('Tarbes', 5)],
+    'Marseille': [('Lyon', 2), ('Rennes', 4)],
+    'Bastia': [('Ajaccio', 4)],
+    'Lyon': [('Marseille', 2), ('Paris', 4), ('Rennes', 3)],
+    'Rennes': [('Lyon', 3), ('Paris', 3)],
+    'Ajaccio': [('Bastia', 3.5)]
+    }
+    dataf_ex_4 = pd.DataFrame(df_ex_4)
+    print(Dijkstra(dataf_ex_4, 'Départ', 'Arrivé', 'Distance').graph())
+    
+
+    
