@@ -23,7 +23,8 @@
     "python.languageServer": "Jedi",
     "terminal.integrated.defaultProfile.windows": "Git Bash",
     "files.exclude": {
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        "**/*.lprof": true
     },
     "python.testing.unittestArgs": [
         "-v",
