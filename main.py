@@ -7,7 +7,15 @@ import time
 app = Flask(__name__)
 
 def nom_to_code(nom, ref):
-    return int(ref[ref["Intitulé plateforme"] == nom]["Code UIC"].iloc[0])
+    if nom == "":
+        raise ValueError("Une gare n'a pas été renseignée")
+
+    result = ref[ref["Intitulé plateforme"] == nom]["Code UIC"]
+
+    if result.empty:
+        raise ValueError(f"La gare '{nom}' est inconnu")
+    else:
+        return int(result.iloc[0])
 
 def code_to_nom(code, ref):
     conv = ref[ref["Code UIC"] == code]
@@ -33,7 +41,6 @@ def search_route():
     #on importe et traite les données
     ref_gare = pcc.Importation("data/referentiel-gares-voyageurs.csv").lecture()
     ref_gare = ref_gare[["Code UIC", "Intitulé plateforme"]]
-
 
     df1 = pcc.Importation("data/tarifs-tgv-inoui-ouigo.csv").lecture()
     if prix == "max":
@@ -93,15 +100,16 @@ def search_route():
     if classe2 == 'false':
         df = df.query('Classe != 2.0')
     
-    
-    from_code = nom_to_code(from_gare, ref_gare)
-    to_code = nom_to_code(to_gare, ref_gare)
-    
     try:
-        t= time.time()
+        from_code = nom_to_code(from_gare, ref_gare)
+        to_code = nom_to_code(to_gare, ref_gare)
+        t = time.time()
         route =  pcc.Dijkstra(df, "Origine", "Destination", "Prix").chemin_destination(from_code, to_code)
-    except ValueError:
-        route = 'Pas de trajet trouvé'   
+    except ValueError as route:
+        result = {
+        'route':  str(route),
+        }
+        return jsonify(result)
     
     route_str = str([code_to_nom(gare, ref_gare) for gare in route[0]])
     route_str = route_str.replace('[', '')
@@ -110,7 +118,7 @@ def search_route():
     route_str = route_str.replace(',', '\n|\n|\n')
     
     result = {
-        'route':   f"Itinéraire de {from_gare} à {to_gare}: \n\n{route_str} \n\nPrix {prix} : {route[1]}  \nExecution : {time.time()-t}s",
+        'route':   f"Itinéraire de {from_gare} à {to_gare}: \n\n{route_str} \n\nPrix {prix} : {route[1]}  \nExecution de Dijkstra : {time.time()-t}s",
     }
     
     return jsonify(result)

@@ -99,8 +99,7 @@ class Dijkstra:
                      set(self.dataf[self.colonne_noeud_arrivee]))}
 
         if source not in set(self.dataf[self.colonne_noeud_depart]):
-            return {sommet: 'Pas de trajet' for sommet in distances
-                    if sommet != source}
+            raise ValueError('Pas de trajet')
         selection = source
         coefficient = 0
         while len(marques) < len(graphe) and selection is not None:
@@ -125,7 +124,7 @@ class Dijkstra:
         for sommet in distances:
             if sommet != source:
                 if distances[sommet][1] == 2**30:
-                    dict_parcours[sommet] = 'Pas de trajet'
+                    raise ValueError('Pas de trajet')
                 else:
                     # Parcourt le graphe à l'envers pour obtenir le chemin
                     parcours = [sommet]
@@ -164,11 +163,11 @@ class Dijkstra:
             'Pas de trajet' si pas de chemin possible.
         """
         if destination == source:
-            raise ValueError(f"{destination} est la source et la destination")
+            raise ValueError("Le point de départ et le point d'arrivée sont identiques")
         if source not in set(self.dataf[self.colonne_noeud_depart]):
-            return 'Pas de trajet'
+            raise ValueError('Pas de trajet depuis votre point de départ')
         if destination not in set(self.dataf[self.colonne_noeud_arrivee]):
-            raise ValueError(f"{destination} n'est pas atteignable")
+            raise ValueError("Votre point d'arrivée n'est pas atteignable")
 
         graphe = self.graph()
         marques = []  # Contiendra le nom des noeuds visités
@@ -196,7 +195,7 @@ class Dijkstra:
             selection, coefficient = minimum
 
         if distances[destination][1] == 2**30:
-            return 'Pas de trajet'
+            raise ValueError('Pas de trajet')
         # Parcourt le graphe à l'envers pour obtenir le chemin
         parcours = [destination]
         sommet = destination
