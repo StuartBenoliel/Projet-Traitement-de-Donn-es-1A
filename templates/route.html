@@ -8,8 +8,18 @@
             document.getElementById("route").innerText = route;
         }
     </script>
+    <style>
+        #corner-image {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 900px; /* Ajustez la largeur selon vos besoins */
+            height: auto; /* Pour conserver les proportions de l'image */
+        }
+    </style>
 </head>
 <body onload="displayRoute()">
+    <img id="corner-image" src="static/train.jpg" alt="Image" />
     <h1>Résultat de la recherche d'itinéraire :</h1>
     <div id="route"></div>
     <a href="/">Revenir à la recherche d'itinéraire</a>

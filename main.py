@@ -7,7 +7,7 @@ import time
 app = Flask(__name__)
 
 def nom_to_code(nom, ref):
-    return(int(ref[ref["Intitulé plateforme"] == nom]["Code UIC"]))
+    return int(ref[ref["Intitulé plateforme"] == nom]["Code UIC"].iloc[0])
 
 def code_to_nom(code, ref):
     conv = ref[ref["Code UIC"] == code]
@@ -36,7 +36,6 @@ def search_route():
 
 
     df1 = pcc.Importation("data/tarifs-tgv-inoui-ouigo.csv").lecture()
-
     if prix == "max":
         colonne_to_drop = "Prix minimum"
     else :

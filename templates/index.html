@@ -19,6 +19,9 @@
 </head>
 <body>
     <form id="search-form">
+
+        <button type="button" onclick="randomGares()" id="random-button">Gares aléatoires</button>
+
         <label for="from-gare">De :</label>
         <div class="autocomplete">
             <input type="text" id="from-gare" class="autocomplete-input" list="gares" placeholder="Gare de départ">
@@ -58,11 +61,17 @@
             <input type="radio" id="prix" name="prix" value="max" >
             <label for="max">Max</label>
         </div>
+        
+        <button type="button" onclick="cancelSearch()" id="cancel-button" style="display: none;">Annuler</button>
+        <button type="button" onclick="searchRoute()" id="search-button">Rechercher</button>
 
-        <button type="button" onclick="searchRoute()">Rechercher</button>
+        <div id="loading-icon" style="visibility: hidden;">
+            <img src="static/loading-icon.gif" alt="Loading..." />
+        </div>
     </form>
     
     <div id="info">Sélectionnez deux gares et cliquez sur "Rechercher".</div>
+
     <div id="map"></div>
 
     <datalist id="gares"></datalist>
@@ -2940,8 +2949,31 @@
             }
     }
 
+    function randomGares() {
+        
+        // Sélection aléatoire de deux gares
+        var randomFromGare = gares[Math.floor(Math.random() * gares.length)];
+        var randomToGare;
+        do {
+            randomToGare = gares[Math.floor(Math.random() * gares.length)];
+        } while (randomToGare === randomFromGare);
+
+        // Remplissage des champs
+        document.getElementById('from-gare').value = randomFromGare;
+        document.getElementById('to-gare').value = randomToGare;
+    }
+
     // Fonction pour la recherche d'itinéraire
+    var currentRequest;  // Variable globale pour stocker la requête en cours
+
     function searchRoute() {
+        // Masque le bouton "Annuler" et affiche le bouton "Rechercher"
+        document.getElementById('cancel-button').style.display = 'block';
+        document.getElementById('search-button').style.display = 'none';
+
+        // Affiche l'icône de chargement
+        document.getElementById('loading-icon').style.visibility = 'visible';
+
         var fromgare = document.getElementById('from-gare').value;
         var togare = document.getElementById('to-gare').value;
         var tgv = document.getElementById('tgv').checked;
@@ -2949,16 +2981,52 @@
         var ter = document.getElementById('ter').checked;
         var classe1 = document.getElementById('1ere').checked;
         var classe2 = document.getElementById('2nde').checked;
-        var prix = document.getElementById('prix').value;
-        
-        if (fromgare && togare && fromgare !== togare) {
-            $.post("/search_route", { from_gare: fromgare, to_gare: togare, tgv: tgv, ouigo: ouigo, ter: ter, classe1: classe1, classe2: classe2, prix: prix }, function (result) {
-                localStorage.setItem("route", result.route);
-                window.location.href = "/route";
-            });
-        } else {
-            document.getElementById('info').innerHTML = 'Veuillez sélectionner deux gares différentes.';
+        var prix;
+        var prixRadios = document.getElementsByName('prix');
+        for (var i = 0; i < prixRadios.length; i++) {
+            if (prixRadios[i].checked) {
+                prix = prixRadios[i].value;
+                break;
+            }
         }
+
+        // Annule la requête précédente s'il y en a une
+        if (currentRequest) {
+            currentRequest.abort();
+        }
+
+        // Lance la nouvelle requête
+        currentRequest = $.post("/search_route", {
+            from_gare: fromgare,
+            to_gare: togare,
+            tgv: tgv,
+            ouigo: ouigo,
+            ter: ter,
+            classe1: classe1,
+            classe2: classe2,
+            prix: prix
+        }, function (result) {
+            localStorage.setItem("route", result.route);
+            window.location.href = "/route";
+            document.getElementById('loading-icon').style.visibility = 'hidden'; // Masquer l'icône après la fin de la requête
+        });
+    }
+
+    function cancelSearch() {
+        // Annule la requête en cours s'il y en a une
+        if (currentRequest) {
+            currentRequest.abort();
+        }
+
+        // Masque le bouton "Annuler" et affiche le bouton "Rechercher"
+        document.getElementById('cancel-button').style.display = 'none';
+        document.getElementById('search-button').style.display = 'block';
+
+        // Masque l'icône de chargement
+        document.getElementById('loading-icon').style.visibility = 'hidden';
+
+        // Réinitialise le contenu de l'élément 'info'
+        document.getElementById('info').innerHTML = 'Sélectionnez deux gares et cliquez sur "Rechercher".';
     }
 </script>
 
