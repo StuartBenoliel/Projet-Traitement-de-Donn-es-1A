@@ -114,11 +114,14 @@ def search_route():
     route_str = str([code_to_nom(gare, ref_gare) for gare in route[0]])
     route_str = route_str.replace('[', '')
     route_str = route_str.replace(']', '')
-    route_str = route_str.replace("'", '')
-    route_str = route_str.replace(',', '\n|\n|\n')
+    route_str = route_str.replace("'", ' ')
+    route_str = route_str.replace('"', ' ')
+    route_str = route_str.replace(',', '\n\u2003↓\n\u2003↓\n\u2003↓\n')
+
+
     
     result = {
-        'route':   f"Itinéraire de {from_gare} à {to_gare}: \n\n{route_str} \n\nPrix {prix} : {route[1]}  \nExecution de Dijkstra : {time.time()-t}s",
+        'route':   f"Itinéraire de {from_gare} à {to_gare}: \n\n{route_str} \n\nPrix {prix} : {route[1]}€  \n\nExecution de Dijkstra : {time.time()-t}s\n\n",
     }
     
     return jsonify(result)
