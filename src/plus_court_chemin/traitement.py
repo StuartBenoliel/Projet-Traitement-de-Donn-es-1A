@@ -58,22 +58,6 @@ class Traitement:
         """
         return self.df.drop(ligne)
 
-    def graph(self):
-        """
-        Crée un graphe représentant les nœuds et les distances entre eux.
-
-        Retour :
-        --------
-        dict :
-            Le graphe représenté sous forme de dictionnaire.
-        """
-        df_grouped = self.df.groupby([self.colonne_noeud_depart])
-        graphe = {}
-        for noeud, data in df_grouped:
-            graphe[noeud] = list(zip(data[self.colonne_noeud_arrivee],
-                                     data[self.colonne_distance]))
-        return graphe
-
     def filtrer_dataframe(self, colonne, condition, valeur):
         """
         Filtre un DataFrame en fonction d'une condition et d'une valeur dans
